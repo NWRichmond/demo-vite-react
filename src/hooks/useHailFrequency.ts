@@ -28,7 +28,7 @@ export const nacelleCredentials = {
 };
 
 export const hailFrequencyFetch = ({ query, variables }: clientParams) =>
-  fetch("https://hailfrequency.com/v3/graphql", {
+  fetch("https://hailfrequency.com/v2/graphql", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
