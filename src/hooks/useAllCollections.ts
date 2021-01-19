@@ -69,7 +69,7 @@ export function useAllCollections() {
   const collections = collectionResponse?.data?.getCollections?.items;
 
   useEffect(() => {
-    const fetchCollectionProducts = () => {
+    async function fetchCollectionProducts(): Promise<collectionProducts[]> {
       if (!collections) {
         return Promise.resolve([]);
       }
@@ -116,7 +116,7 @@ export function useAllCollections() {
           };
         })
       );
-    };
+    }
 
     fetchCollectionProducts().then(
       (collectionProducts: collectionProducts[]) => {

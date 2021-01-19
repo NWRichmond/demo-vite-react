@@ -59,7 +59,7 @@ export default function Deck({ cards, handleDeckChange }: deckProps) {
       const trigger = velocity > 0.15; // If you flick hard enough it should trigger the card to fly out
       const dir = xDir < 0 ? -1 : 1; // Direction should either point left or right
       if (!down && trigger) gone.add(index); // If button/finger's up and trigger velocity is reached, we flag the card ready to fly out
-      set((i) => {
+      set((i: number) => {
         if (index !== i) return; // We're only interested in changing spring-data for the current spring
         const isGone = gone.has(index);
         const x = isGone ? (200 + window.innerWidth) * dir : down ? xDelta : 0; // When a card is gone it flys out left or right, otherwise goes back to zero
@@ -77,6 +77,19 @@ export default function Deck({ cards, handleDeckChange }: deckProps) {
         setTimeout(() => clearDeck({ gone, set, handleDeckChange }), 600);
     }
   );
+
+  function getCardStyles(
+    rot: any,
+    scale: any,
+    trans: (r: number, s: number) => string,
+    src: string
+  ) {
+    const transform: any = interpolate([rot, scale], trans);
+    const backgroundImage: any = `url(${src})`;
+    const cardStyles = { transform, backgroundImage };
+
+    return cardStyles;
+  }
   // Now we're just mapping the animated values to our view, that's it. Btw, this component only renders once. :-)
   return (
     <>
@@ -86,17 +99,14 @@ export default function Deck({ cards, handleDeckChange }: deckProps) {
           style={{
             transform: interpolate(
               [x, y],
-              (x, y) => `translate3d(${x}px,${y}px,0)`
+              (x: number, y: number) => `translate3d(${x}px,${y}px,0)`
             ),
           }}
         >
           {/* This is the card itself, we're binding our gesture to it (and inject its index so we know which is which) */}
           <animated.div
             {...bind(i)}
-            style={{
-              transform: interpolate([rot, scale], trans),
-              backgroundImage: `url(${cards[i].src})`,
-            }}
+            style={getCardStyles(rot, scale, trans, cards[i].src)}
           />
         </animated.div>
       ))}

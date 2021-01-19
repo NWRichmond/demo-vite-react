@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Emilys+Candy&display=swap");
+
 * {
   box-sizing: border-box;
 }
@@ -30,8 +32,6 @@ body {
 button {
   font-size: calc(10px + 2vmin);
 }
-
-@import url("https://fonts.googleapis.com/css2?family=Emilys+Candy&display=swap");
 
 .welcome {
   font-size: 48pt;

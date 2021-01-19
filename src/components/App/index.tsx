@@ -18,8 +18,8 @@ export default function App() {
 
   const handleDeckChange = () => {
     if (collectionProducts) {
-      if (activeCollection !== collectionProducts.length - 1) {
-        // TODO: handle change
+      if (activeCollection < Object.keys(collectionProducts).length) {
+        setActiveCollection(activeCollection + 1);
       } else {
         setActiveCollection(0);
       }
@@ -41,14 +41,10 @@ export default function App() {
       } else {
         handleDeckChange();
       }
-
-      // if (!cards.length) {
-      //   setActiveCollection(activeCollection + 1);
-      // }
     }
   }, [collectionProducts, activeCollection]);
 
-  return cards.length ? (
+  return loadingState === "done" && cards.length ? (
     <Deck cards={cards} handleDeckChange={handleDeckChange} />
   ) : (
     <div>
