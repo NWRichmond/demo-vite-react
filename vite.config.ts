@@ -5,7 +5,7 @@ import { resolve } from "path";
 export default defineConfig({
   plugins: [reactRefresh()],
   alias: {
-    "@": resolve(__dirname, "src"),
+    "~": resolve(__dirname, "src"),
   },
   build: {
     rollupOptions: {
