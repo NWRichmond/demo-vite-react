@@ -1,6 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 
-export default function Canvas() {
+interface canvasProps {
+  pageX?: number;
+  pageY?: number;
+}
+
+export default function Canvas({ pageX = 100, pageY = 100 }: canvasProps) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [lastCoords, setLastCoords] = useState([0, 0]);
@@ -31,8 +36,8 @@ export default function Canvas() {
   useEffect(() => {
     if (canvas!.current) {
       const ctx = canvas.current.getContext("2d");
-      canvas.current.width = window.innerWidth;
-      canvas.current.height = window.innerHeight;
+      canvas.current.width = window.innerWidth * (pageX / 100);
+      canvas.current.height = window.innerHeight * (pageY / 100);
 
       if (ctx !== null) {
         ctx.strokeStyle = "#BADA55";

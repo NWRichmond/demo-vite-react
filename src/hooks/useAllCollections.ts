@@ -28,6 +28,12 @@ interface product {
   };
 }
 
+interface productResponse {
+  data: {
+    getProductByHandle: product;
+  };
+}
+
 interface collectionProducts {
   handle: string;
   products: product[];
@@ -39,10 +45,9 @@ enum loadingStates {
 }
 
 export function useAllCollections() {
-  const [
-    collectionProducts,
-    setCollectionProducts,
-  ] = useState<collectionProducts>();
+  const [collectionProducts, setCollectionProducts] = useState<
+    collectionProducts[]
+  >();
   const [productsLoadingState, setProductsLoadingState] = useState("loading");
   const {
     response: collectionResponse,
@@ -64,44 +69,62 @@ export function useAllCollections() {
   const collections = collectionResponse?.data?.getCollections?.items;
 
   useEffect(() => {
-    collections?.map((collection: collection) => {
-      const getProductByHandle = `
-        query getProductData($handle: String!) {
-          getProductByHandle(handle: $handle, locale: "en-us") {
-            handle
-            title
-            featuredMedia {
-              src
-              thumbnailSrc
-              altText
-            }
-            priceRange {
-              min
-              max
-            }
-            variants {
-              price
-            }
-          }
-        }
-      `;
+    const fetchCollectionProducts = () => {
+      if (!collections) {
+        return Promise.resolve([]);
+      }
 
-      Promise.all(
-        collection.productLists[0].handles.map((handle: string) =>
-          hailFrequencyFetch({
-            query: getProductByHandle,
-            variables: { handle },
-          }).then((res): Promise<product> => res.json())
-        )
-      ).then((products) => {
-        setCollectionProducts({
-          handle: collection.handle,
-          products,
-        });
+      return Promise.all(
+        collections.map(async (collection: collection) => {
+          const getProductByHandle = `
+            query getProductData($handle: String!) {
+              getProductByHandle(handle: $handle, locale: "en-us") {
+                handle
+                title
+                featuredMedia {
+                  src
+                  thumbnailSrc
+                  altText
+                }
+                priceRange {
+                  min
+                  max
+                }
+                variants {
+                  price
+                }
+              }
+            }
+          `;
+
+          const products = await Promise.all(
+            collection.productLists[0].handles.map(async (handle: string) => {
+              const product = await hailFrequencyFetch({
+                query: getProductByHandle,
+                variables: { handle },
+              })
+                .then((res): Promise<productResponse> => res.json())
+                .then((res) => res?.data?.getProductByHandle);
+
+              return product;
+            })
+          );
+
+          return {
+            handle: collection.handle,
+            products,
+          };
+        })
+      );
+    };
+
+    fetchCollectionProducts().then(
+      (collectionProducts: collectionProducts[]) => {
+        setCollectionProducts(collectionProducts);
 
         setProductsLoadingState("done");
-      });
-    });
+      }
+    );
   }, [collections]);
 
   const allAreDone = [collectionsLoading, productsLoadingState].every(
