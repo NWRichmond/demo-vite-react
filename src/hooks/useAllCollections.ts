@@ -61,7 +61,7 @@ export function useAllCollections() {
     }  
   `);
 
-  const collections = collectionResponse?.data.getCollections.items;
+  const collections = collectionResponse?.data?.getCollections?.items;
 
   useEffect(() => {
     collections?.map((collection: collection) => {
