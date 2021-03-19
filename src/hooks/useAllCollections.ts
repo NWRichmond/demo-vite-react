@@ -97,18 +97,26 @@ export function useAllCollections() {
             }
           `;
 
-          const products = await Promise.all(
-            collection.productLists[0].handles.map(async (handle: string) => {
-              const product = await hailFrequencyFetch({
-                query: getProductByHandle,
-                variables: { handle },
-              })
-                .then((res): Promise<productResponse> => res.json())
-                .then((res) => res?.data?.getProductByHandle);
+          const handles =
+            (Array.isArray(collection?.productLists) &&
+              collection.productLists[0]?.handles) ||
+            null;
+          let products;
 
-              return product;
-            })
-          );
+          if (handles) {
+            products = await Promise.all(
+              handles.map(async (handle: string) => {
+                const product = await hailFrequencyFetch({
+                  query: getProductByHandle,
+                  variables: { handle },
+                })
+                  .then((res): Promise<productResponse> => res.json())
+                  .then((res) => res?.data?.getProductByHandle);
+
+                return product;
+              })
+            );
+          }
 
           return {
             handle: collection.handle,
